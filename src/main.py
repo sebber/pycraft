@@ -19,7 +19,7 @@ class MyGame(Game):
     self.factory.create_worker(140, 80)
     self.factory.create_worker(400, 280)
     
-    self.movement_system = MovementSystem()  
+    self.movement_system = MovementSystem(self.entity_manager)  
     
   def select_entity(self, mouse_pos):
     for entity in self.entity_manager.entities:
@@ -50,8 +50,8 @@ class MyGame(Game):
       target.x, target.y = target_pos
       target.has_target = True
             
-  def update(self, dt: float):
-    self.movement_system.update(self.entity_manager, dt)
+  def update(self, delta_time: float):
+    self.movement_system.update(delta_time)
   
   def draw(self):
     self.screen.fill((0, 0, 0))
