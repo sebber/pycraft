@@ -1,6 +1,4 @@
-from typing import Type
-
-
+from typing import List, Type
 class EntityManager:
   def __init__(self):
     self.next_entity_id = 1
@@ -33,10 +31,10 @@ class EntityManager:
       if entity_id in self.components[component_type]:
         del self.components[component_type][entity_id]
     
-  def get_entities_with_component[C](self, component_type: C):
+  def get_entities_with_component[C](self, component_type: C) -> set[int]:
     return self.components.get(component_type, {}).keys()
 
-  def get_entities_with_components[C](self, *component_types: C):
+  def get_entities_with_components[C](self, *component_types: C) -> set[int]:
     if not component_types:
       return []
 
