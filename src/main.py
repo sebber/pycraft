@@ -97,7 +97,6 @@ class MyGame(Game):
             
   def update(self, dt: float):
     self.movement_system.update(self.entity_manager, dt)
-    pass
   
   def draw(self):
     self.screen.fill((0, 0, 0))
