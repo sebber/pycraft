@@ -46,11 +46,6 @@ class MovementSystem:
 
 class MyGame(Game):
   def init(self):
-    # self.player_pos = pygame.Vector2(
-    #   self.screen.get_width() / 2,
-    #   self.screen.get_height() / 2
-    # )
-    # self.player_speed = 500
     self.entity_manager = EntityManager()
     self.selected_entity: int = None
     
@@ -103,19 +98,9 @@ class MyGame(Game):
   def update(self, dt: float):
     self.movement_system.update(self.entity_manager, dt)
     pass
-    # keys = pygame.key.get_pressed()
-    # if keys[pygame.K_w]:
-    #   self.player_pos.y -= self.player_speed * dt
-    # if keys[pygame.K_s]:
-    #   self.player_pos.y += self.player_speed * dt
-    # if keys[pygame.K_a]:
-    #   self.player_pos.x -= self.player_speed * dt
-    # if keys[pygame.K_d]:
-    #   self.player_pos.x += self.player_speed * dt
   
   def draw(self):
     self.screen.fill((0, 0, 0))
-    # pygame.draw.circle(self.screen, "red", self.player_pos, 40)
     
     for entity in self.entity_manager.entities:
       pos = self.entity_manager.get_component(entity, PositionComponent)
