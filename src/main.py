@@ -1,7 +1,7 @@
 from typing import List
 import pygame
 
-from components import PositionComponent, RenderComponent, TargetPositionComponent, VelocityComponent
+from components import PositionComponent, RenderComponent, TargetPositionComponent
 from engine.entity_manager import EntityManager
 from engine.game import Game
 from entity_factory import EntityFactory
