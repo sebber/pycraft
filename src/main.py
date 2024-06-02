@@ -4,27 +4,20 @@ import pygame
 from components import PositionComponent, RenderComponent, TargetPositionComponent, VelocityComponent
 from engine.entity_manager import EntityManager
 from engine.game import Game
+from entity_factory import EntityFactory
 from systems import MovementSystem
 
 class MyGame(Game):
   def init(self):
     self.entity_manager = EntityManager()
+    self.factory = EntityFactory(self.entity_manager)
     self.selected_entity: int = None
     
-    entity1 = self.entity_manager.create_entity()
-    self.entity_manager.add_component(entity1, PositionComponent(200, 50))
-    self.entity_manager.add_component(entity1, VelocityComponent(100))
-    self.entity_manager.add_component(entity1, TargetPositionComponent(200, 50))
-    self.entity_manager.add_component(entity1,
-                                      RenderComponent((255, 0, 0), 50, 50))
-    
-    entity2 = self.entity_manager.create_entity()
-    self.entity_manager.add_component(entity2, PositionComponent(270, 250))
-    self.entity_manager.add_component(entity2, VelocityComponent(200))
-    self.entity_manager.add_component(entity2, 
-                                      TargetPositionComponent(270, 250))
-    self.entity_manager.add_component(entity2,
-                                      RenderComponent((0, 255, 0), 50, 50))
+    self.factory.create_worker(50, 50)
+    self.factory.create_worker(200, 250)
+    self.factory.create_worker(120, 180)
+    self.factory.create_worker(140, 80)
+    self.factory.create_worker(400, 280)
     
     self.movement_system = MovementSystem()  
     
