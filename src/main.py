@@ -63,12 +63,22 @@ class MyGame(Game):
   def draw(self):
     self.screen.fill((0, 0, 0))
     
-    for entity in self.entity_manager.entities:
+    for entity in self.entity_manager.get_entities_with_components(RenderComponent, PositionComponent):
       pos = self.entity_manager.get_component(entity, PositionComponent)
       render = self.entity_manager.get_component(entity, RenderComponent)
-      pygame.draw.rect(self.screen, render.color, (pos.x, pos.y, render.width, render.height), 2)
+      pygame.draw.rect(
+        self.screen,
+        render.color,
+        (pos.x, pos.y, render.width, render.height),
+        2
+      )
       if entity == self.selected_entity:
-        pygame.draw.rect(self.screen, (255, 255, 255), (pos.x-1, pos.y-1, render.width+2, render.height+2), 2)
+        pygame.draw.rect(
+          self.screen,
+          (255, 255, 255),
+          (pos.x-2, pos.y-2, render.width+4, render.height+4),
+          2
+        )
       
 
 if __name__ == "__main__":
