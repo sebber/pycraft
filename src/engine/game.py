@@ -15,10 +15,10 @@ class Game:
   def init() -> None:
     pass
     
-  def update(self, _dt: float) -> None:
+  def update(self, delta_time: float) -> None:
     pass
   
-  def draw() -> None:
+  def draw(self, screen: pygame.Surface) -> None:
     pass
   
   def run(self) -> None:
@@ -29,7 +29,7 @@ class Game:
       self.handle_events()
       delta_time = self.clock.tick(self.target_fps) / 1000.0
       self.update(delta_time)
-      self.draw()
+      self.draw(self.screen)
       pygame.display.flip()
       
     pygame.quit()

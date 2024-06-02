@@ -1,17 +1,19 @@
 from typing import List
 import pygame
 
-from components import PositionComponent, RenderComponent, TargetPositionComponent
+from components import PositionComponent, RenderComponent, SelectedComponent, TargetPositionComponent
 from engine.entity_manager import EntityManager
 from engine.game import Game
+from engine.world import World
 from entity_factory import EntityFactory
-from systems import MovementSystem
+from systems import MovementSystem, RenderSystem
 
 class MyGame(Game):
   def init(self):
-    self.entity_manager = EntityManager()
-    self.factory = EntityFactory(self.entity_manager)
-    self.selected_entity: int = None
+    self.world = World()
+    self.world.add_system(MovementSystem)
+    self.world.add_system(RenderSystem)
+    self.factory = EntityFactory(self.world.entity_manager)
     
     self.factory.create_worker(50, 50)
     self.factory.create_worker(200, 250)
@@ -19,17 +21,19 @@ class MyGame(Game):
     self.factory.create_worker(140, 80)
     self.factory.create_worker(400, 280)
     
-    self.movement_system = MovementSystem(self.entity_manager)  
-    
-  def select_entity(self, mouse_pos):
-    for entity in self.entity_manager.entities:
-      pos = self.entity_manager.get_component(entity, PositionComponent)
-      render = self.entity_manager.get_component(entity, RenderComponent)
+  def select_entity(self, mouse_pos, multi_select = False):
+    e_manager = self.world.entity_manager
+    for entity in e_manager.get_entities_with_components(PositionComponent, RenderComponent):
+      pos = e_manager.get_component(entity, PositionComponent)
+      render = e_manager.get_component(entity, RenderComponent)
       if (pygame.Rect(pos.x, pos.y, render.width, render.height).collidepoint(mouse_pos)):
-        self.selected_entity = entity
+        if not multi_select:
+          selected_entities = list(e_manager.get_entities_with_component(SelectedComponent))
+          for selected in selected_entities:
+            e_manager.remove_component(selected, SelectedComponent)
+        
+        e_manager.add_component(entity, SelectedComponent())
         print(f"Entity {entity} selected")
-        return
-      self.selected_entity = None
   
   def handle_events(self):
     for event in pygame.event.get():
@@ -37,41 +41,28 @@ class MyGame(Game):
         exit()
       elif event.type == pygame.MOUSEBUTTONDOWN:
         if event.button == 1:  # Left mouse button
-          self.select_entity(event.pos)
+          keys = pygame.key.get_pressed()
+          shift = keys[pygame.K_LSHIFT]
+          self.select_entity(event.pos, shift)
         elif event.button == 3:  # Right mouse button
           self.move_selected_entity(event.pos)
       
   def move_selected_entity(self, target_pos):
-    if self.selected_entity:
-      target = self.entity_manager.get_component(
-        self.selected_entity,
+    for entity in self.world.entity_manager.get_entities_with_component(SelectedComponent):
+      print(f"Entity {entity} has SelectedComponent")
+      target = self.world.entity_manager.get_component(
+        entity,
         TargetPositionComponent
       )
       target.x, target.y = target_pos
       target.has_target = True
             
   def update(self, delta_time: float):
-    self.movement_system.update(delta_time)
+    self.world.update(delta_time)
   
-  def draw(self):
+  def draw(self, screen: pygame.Surface):
     self.screen.fill((0, 0, 0))
-    
-    for entity in self.entity_manager.get_entities_with_components(RenderComponent, PositionComponent):
-      pos = self.entity_manager.get_component(entity, PositionComponent)
-      render = self.entity_manager.get_component(entity, RenderComponent)
-      pygame.draw.rect(
-        self.screen,
-        render.color,
-        (pos.x, pos.y, render.width, render.height),
-        2
-      )
-      if entity == self.selected_entity:
-        pygame.draw.rect(
-          self.screen,
-          (255, 255, 255),
-          (pos.x-2, pos.y-2, render.width+4, render.height+4),
-          2
-        )
+    self.world.draw(screen)
       
 
 if __name__ == "__main__":

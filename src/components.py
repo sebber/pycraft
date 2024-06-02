@@ -18,3 +18,7 @@ class TargetPositionComponent:
 class VelocityComponent:
   def __init__(self, velocity: int):
     self.velocity = velocity
+    
+class SelectedComponent:
+  def __init__(self):
+    self.selected = True
