@@ -4,7 +4,7 @@ from engine.entity_manager import EntityManager
 
 class MovementSystem:
   def update(self, entity_manager: EntityManager, delta_time: float):
-    for entity in entity_manager.entities:
+    for entity in entity_manager.get_entities_with_components(PositionComponent, VelocityComponent, TargetPositionComponent):
       pos = entity_manager.get_component(entity, PositionComponent)
       velocity = entity_manager.get_component(entity, VelocityComponent)
       target_pos = entity_manager.get_component(entity, TargetPositionComponent)
