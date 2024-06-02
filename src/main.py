@@ -1,48 +1,10 @@
 from typing import List
 import pygame
 
+from components import PositionComponent, RenderComponent, TargetPositionComponent, VelocityComponent
 from engine.entity_manager import EntityManager
 from engine.game import Game
-
-class PositionComponent:
-  def __init__(self, x: int, y: int):
-    self.x = x
-    self.y = y
-
-class RenderComponent:
-  def __init__(self, color: tuple[int, int, int], width: int, height: int):
-    self.color = color
-    self.width = width
-    self.height = height
-
-class TargetPositionComponent:
-  def __init__(self, x: int, y: int):
-    self.x = x
-    self.y = y
-    self.has_target = False
-
-class VelocityComponent:
-  def __init__(self, velocity: int):
-    self.velocity = velocity
-
-class MovementSystem:
-  def update(self, entity_manager: EntityManager, delta_time: float):
-    for entity in entity_manager.entities:
-      pos = entity_manager.get_component(entity, PositionComponent)
-      velocity = entity_manager.get_component(entity, VelocityComponent)
-      target_pos = entity_manager.get_component(entity, TargetPositionComponent)
-      
-      if pos and target_pos.has_target:
-        dx = target_pos.x - pos.x
-        dy = target_pos.y - pos.y
-        distance = (dx**2 + dy**2)**0.5
-        if distance < 1:
-          target_pos.has_target = False
-        else:
-          dir_x = dx / distance
-          dir_y = dy / distance
-          pos.x += dir_x * velocity.velocity * delta_time
-          pos.y += dir_y * velocity.velocity * delta_time
+from systems import MovementSystem
 
 class MyGame(Game):
   def init(self):
