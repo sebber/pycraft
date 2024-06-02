@@ -1,7 +1,7 @@
 from typing import List
 import pygame
 
-from engine.entity import Entity
+from engine.entity_manager import EntityManager
 from engine.game import Game
 
 class PositionComponent:
@@ -26,11 +26,11 @@ class VelocityComponent:
     self.velocity = velocity
 
 class MovementSystem:
-  def update(self, entities: List[Entity], delta_time: float):
-    for entity in entities:
-      pos = entity.get_component(PositionComponent)
-      velocity = entity.get_component(VelocityComponent)
-      target_pos = entity.get_component(TargetPositionComponent)
+  def update(self, entity_manager: EntityManager, delta_time: float):
+    for entity in entity_manager.entities:
+      pos = entity_manager.get_component(entity, PositionComponent)
+      velocity = entity_manager.get_component(entity, VelocityComponent)
+      target_pos = entity_manager.get_component(entity, TargetPositionComponent)
       
       if pos and target_pos.has_target:
         dx = target_pos.x - pos.x
@@ -51,29 +51,33 @@ class MyGame(Game):
     #   self.screen.get_height() / 2
     # )
     # self.player_speed = 500
+    self.entity_manager = EntityManager()
+    self.selected_entity: int = None
     
-    self.entities: List[Entity] = []
-    self.selected_entity = None
-    self.create_entity(50, 50, 50, 50, 100, (255, 0, 0))
-    self.create_entity(200, 200, 50, 50, 200, (0, 255, 0))
+    entity1 = self.entity_manager.create_entity()
+    self.entity_manager.add_component(entity1, PositionComponent(200, 50))
+    self.entity_manager.add_component(entity1, VelocityComponent(100))
+    self.entity_manager.add_component(entity1, TargetPositionComponent(200, 50))
+    self.entity_manager.add_component(entity1,
+                                      RenderComponent((255, 0, 0), 50, 50))
     
-    self.movement_system = MovementSystem()
+    entity2 = self.entity_manager.create_entity()
+    self.entity_manager.add_component(entity2, PositionComponent(270, 250))
+    self.entity_manager.add_component(entity2, VelocityComponent(200))
+    self.entity_manager.add_component(entity2, 
+                                      TargetPositionComponent(270, 250))
+    self.entity_manager.add_component(entity2,
+                                      RenderComponent((0, 255, 0), 50, 50))
     
-  def create_entity(self, x, y, width, height, velocity, color):
-    entity = Entity()
-    entity.add_component(PositionComponent(x, y))
-    entity.add_component(RenderComponent(color, width, height))
-    entity.add_component(VelocityComponent(velocity))
-    entity.add_component(TargetPositionComponent(x, y))
-    self.entities.append(entity)    
+    self.movement_system = MovementSystem()  
     
   def select_entity(self, mouse_pos):
-    for entity in self.entities:
-      pos = entity.get_component(PositionComponent)
-      render = entity.get_component(RenderComponent)
+    for entity in self.entity_manager.entities:
+      pos = self.entity_manager.get_component(entity, PositionComponent)
+      render = self.entity_manager.get_component(entity, RenderComponent)
       if (pygame.Rect(pos.x, pos.y, render.width, render.height).collidepoint(mouse_pos)):
         self.selected_entity = entity
-        print(f"Entity {entity.id} selected")
+        print(f"Entity {entity} selected")
         return
       self.selected_entity = None
   
@@ -89,12 +93,15 @@ class MyGame(Game):
       
   def move_selected_entity(self, target_pos):
     if self.selected_entity:
-      target = self.selected_entity.get_component(TargetPositionComponent)
+      target = self.entity_manager.get_component(
+        self.selected_entity,
+        TargetPositionComponent
+      )
       target.x, target.y = target_pos
       target.has_target = True
             
   def update(self, dt: float):
-    self.movement_system.update(self.entities, dt)
+    self.movement_system.update(self.entity_manager, dt)
     pass
     # keys = pygame.key.get_pressed()
     # if keys[pygame.K_w]:
@@ -110,12 +117,12 @@ class MyGame(Game):
     self.screen.fill((0, 0, 0))
     # pygame.draw.circle(self.screen, "red", self.player_pos, 40)
     
-    for entity in self.entities:
-      pos = entity.get_component(PositionComponent)
-      render = entity.get_component(RenderComponent)
+    for entity in self.entity_manager.entities:
+      pos = self.entity_manager.get_component(entity, PositionComponent)
+      render = self.entity_manager.get_component(entity, RenderComponent)
       pygame.draw.rect(self.screen, render.color, (pos.x, pos.y, render.width, render.height), 2)
       if entity == self.selected_entity:
-        pygame.draw.rect(self.screen, (255, 255, 255), (pos.x, pos.y, render.width, render.height), 2)
+        pygame.draw.rect(self.screen, (255, 255, 255), (pos.x-1, pos.y-1, render.width+2, render.height+2), 2)
       
 
 if __name__ == "__main__":
