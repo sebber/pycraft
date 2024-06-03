@@ -1,7 +1,7 @@
 from typing import List, Type
 class EntityManager:
   def __init__(self):
-    self.next_entity_id = 1
+    self.next_entity_id = 0
     self.entities: dict[int] = {}
     self.components = {}
     
@@ -23,7 +23,7 @@ class EntityManager:
     
   def get_component[C](self, entity_id: int, component_type: Type[C]) -> C:
     return self.components.get(component_type, {}).get(entity_id)      
-    
+  
   def remove_component[C](self, entity_id: int, component_type: Type[C]):
     if entity_id in self.entities:
       self.entities[entity_id] = [c for c in self.entities[entity_id] if not isinstance(c, component_type)]
