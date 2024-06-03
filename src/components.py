@@ -22,3 +22,13 @@ class VelocityComponent:
 class SelectedComponent:
   def __init__(self):
     self.selected = True
+    
+class BoundingBoxComponent:
+  def __init__(self, width: int, height: int):
+    self.width = width
+    self.height = height
+    
+class CollisionComponent:
+  def __init__(self, other_entity):
+    print(f"poop")
+    self.other_entity = other_entity

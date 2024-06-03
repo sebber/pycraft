@@ -6,13 +6,15 @@ from engine.entity_manager import EntityManager
 from engine.game import Game
 from engine.world import World
 from entity_factory import EntityFactory
-from systems import MovementSystem, RenderSystem
+from systems import CollisionDetectionSystem, CollisionResolutionSystem, MovementSystem, RenderSystem
 
 class MyGame(Game):
   def init(self):
     self.world = World()
     self.world.add_system(MovementSystem)
     self.world.add_system(RenderSystem)
+    self.world.add_system(CollisionDetectionSystem)
+    self.world.add_system(CollisionResolutionSystem)
     self.factory = EntityFactory(self.world.entity_manager)
     
     self.factory.create_worker(50, 50)
